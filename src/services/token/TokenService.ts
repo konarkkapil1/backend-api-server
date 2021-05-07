@@ -17,12 +17,14 @@ export default class Token {
         this.accessTokenSecret = token.ACCESS_TOKEN_SECRET;
         this.refreshTokenSecret = token.REFRESH_TOKEN_SECRET;
         this.accessTokenOptions = {
-            expiresIn: '1w',
+            expiresIn: '1d',
             issuer: DOMAIN,
+            // algorithm: token.ALGO
         }
         this.refreshTokenOptions = {
             expiresIn: '1y',
             issuer: DOMAIN,
+            // algorithm: token.ALGO
         }
     }
 
@@ -31,9 +33,9 @@ export default class Token {
             const accessToken = jwt.sign({iat: this.iat, data: this.payload, sub: this.payload.id, prm: uuid()} , this.accessTokenSecret, this.accessTokenOptions);
             const refreshToken = jwt.sign({iat: this.iat, data: {}, sub: this.payload.id, prm: uuid()}, this.refreshTokenSecret, this.refreshTokenOptions)
 
-            return {accessToken, refreshToken};
+            return { accessToken, refreshToken };
         }catch(error){
-            throw new Error(error.message);
+            throw new Error(error);
         }
     }
 

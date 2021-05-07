@@ -52,7 +52,7 @@ export class InternalServerError {
     private message: string = "Internal server error";
 
     public send(res: Response): Response {
-        return res.status(this.status).json({error: this.message})
+        return res.status(this.code).json({error: this.message})
     }
 }
 

@@ -1,34 +1,33 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { nextTick } from 'node:process';
 import { token } from '../config';
 import { InternalServerError, UnauthorizedError }  from '../response/Response';
 
 export default class Authentication {
-    private req: Request;
-    private res: Response;
-    private next: NextFunction;
+    private app: Router;
 
-    constructor(req: Request, res: Response, next: NextFunction) {
-        this.req = req;
-        this.res = res;
-        this.next = next;
-        this.authenticate();
+    constructor(app: Router) {
+        this.app = app;
     }
 
-    private authenticate() {
-        // if(!this.req.headers['authorization']) new UnauthorizedError().send(this.res);
+    public authenticate() {
+        return async (req: any, res: Response, next: NextFunction) => {
+            if (req.headers['access-token']) {
+                const accessToken: string = req.headers['access-token'].toString();
+                try{
+                    const decodedAccessToken: any = await jwt.verify(accessToken, token.ACCESS_TOKEN_SECRET);
+                    if (decodedAccessToken.exp < Date.now()) {
+                        return new UnauthorizedError().send(res);
+                    }
+                    req.user = decodedAccessToken;
 
-        // const header: string | undefined = this.req.headers['authorization'];
-        // const authToken: string = header.split(' ')[1];
-
-        // if (token != null) {
-        //     try{
-        //         this.req.payload = jwt.verify(authToken, token.ACCESS_TOKEN_SECRET);
-        //         this.next();
-        //     }catch(error){
-        //         new InternalServerError().send(this.res);
-        //     }
-        // }
+                    next();
+                }catch(error){
+                    return new InternalServerError().send(res);
+                }
+            } else {
+                return new UnauthorizedError().send(res);
+            }
+        }
     }
 }
