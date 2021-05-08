@@ -1,9 +1,10 @@
 import UserRepo from '../../database/repositories/User';
 import User from '../../database/models/User';
 import Token from '../token/TokenService';
+import Hash from '../hash/Hash';
 
 export default class SignupService {
-    private user:User;
+    private user: User;
     private newUser: object;
 
     constructor(user:User) {
@@ -22,6 +23,13 @@ export default class SignupService {
             }
         }catch(error) {
             throw new Error(error);
+        }
+
+        try{
+            const hash = new Hash(this.user.password);
+            this.user.password = await hash.encrypt();
+        }catch(error) {
+            throw new Error(error)
         }
 
         try{
