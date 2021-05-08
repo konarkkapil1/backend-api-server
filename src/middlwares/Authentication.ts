@@ -1,33 +1,50 @@
-import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { token } from '../config';
-import { InternalServerError, UnauthorizedError }  from '../response/Response';
+import JWT from '../utils/JWT';
+import { token, DOMAIN } from '../config';
+import { UnauthorizedError }  from '../response/Response';
 
 export default class Authentication {
-    private app: Router;
-
-    constructor(app: Router) {
-        this.app = app;
-    }
 
     public authenticate() {
         return async (req: any, res: Response, next: NextFunction) => {
             if (req.headers['access-token']) {
                 const accessToken: string = req.headers['access-token'].toString();
+
                 try{
                     const decodedAccessToken: any = await jwt.verify(accessToken, token.ACCESS_TOKEN_SECRET);
+                    
+                    //verifying token
+                    if (this.validateToken(decodedAccessToken) != true) {
+                        return new UnauthorizedError().send(res);
+                    }
+
                     if (decodedAccessToken.exp < Date.now()) {
+
                         return new UnauthorizedError().send(res);
                     }
                     req.user = decodedAccessToken;
 
                     next();
                 }catch(error){
-                    return new InternalServerError().send(res);
+                    return new UnauthorizedError().send(res);
                 }
             } else {
                 return new UnauthorizedError().send(res);
             }
         }
+    }
+
+    private validateToken(payload: JWT): boolean {
+        if (
+            payload == undefined ||
+            payload.iat == undefined ||
+            payload.sub == undefined ||
+            payload.prm == undefined ||
+            payload.iss != DOMAIN
+        ) {
+            return false;
+        }
+        return true;
     }
 }

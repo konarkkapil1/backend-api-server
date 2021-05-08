@@ -19,19 +19,17 @@ export default class Token {
         this.accessTokenOptions = {
             expiresIn: '1d',
             issuer: DOMAIN,
-            // algorithm: token.ALGO
         }
         this.refreshTokenOptions = {
             expiresIn: '1y',
             issuer: DOMAIN,
-            // algorithm: token.ALGO
         }
     }
 
     public encode(): object | Error {
         try{
-            const accessToken = jwt.sign({iat: this.iat, data: this.payload, sub: this.payload.id, prm: uuid()} , this.accessTokenSecret, this.accessTokenOptions);
-            const refreshToken = jwt.sign({iat: this.iat, data: {}, sub: this.payload.id, prm: uuid()}, this.refreshTokenSecret, this.refreshTokenOptions)
+            const accessToken = jwt.sign({iat: this.iat, data: this.payload, sub: this.payload.id, prm: uuid(), alg: 'RS256'} , this.accessTokenSecret, this.accessTokenOptions);
+            const refreshToken = jwt.sign({iat: this.iat, data: {}, sub: this.payload.id, prm: uuid(), alg: 'RS256'}, this.refreshTokenSecret, this.refreshTokenOptions)
 
             return { accessToken, refreshToken };
         }catch(error){

@@ -20,6 +20,7 @@ export default class Signup {
 
                 return new HttpResponse('user',user).send(res);
             }catch(error){
+                console.log(error);
                 return new InternalServerError().send(res);
             }
             
