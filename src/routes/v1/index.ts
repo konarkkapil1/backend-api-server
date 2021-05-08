@@ -20,7 +20,7 @@ export default class Routes {
         this.app.use('/auth', new Signup(this.app).getRoute());
 
         //Authentication middleware
-        this.app.use(new Authentication(this.app).authenticate());
+        this.app.use(new Authentication().authenticate());
 
         this.app.get('/index', (req,res) => {
             res.json({message: "success", user: (<any>req).user});
