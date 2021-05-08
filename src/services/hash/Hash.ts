@@ -15,6 +15,6 @@ export default class Hash {
     }
 
     public async compare(password: string, hashedPassword: string): Promise<boolean> {
-        return bcrypt.compareSync(password, hashedPassword);
+        return await bcrypt.compareSync(password, hashedPassword);
     }
 }
