@@ -1,11 +1,14 @@
 import { Router } from 'express';
 import Signup from './auth/signup';
+import Login from './auth/Login';
 import Authentication from '../../middlwares/Authentication';
 import { NotFound } from '../../response/Response';
 
 export default class Routes {
     private app: Router;
     
+    AUTH_ROUTES_PATH = '/auth';
+
     constructor() {
         this.app = Router();
     }
@@ -17,7 +20,8 @@ export default class Routes {
         /*
             @@PATH = /auth/signup
         */
-        this.app.use('/auth', new Signup(this.app).getRoute());
+        this.app.use(this.AUTH_ROUTES_PATH, new Signup(this.app).getRoute());
+        this.app.use(this.AUTH_ROUTES_PATH, new Login(this.app).getRoute())
 
         //Authentication middleware
         this.app.use(new Authentication().authenticate());
