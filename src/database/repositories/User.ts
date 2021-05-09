@@ -5,7 +5,13 @@ export default class UserRepo {
 
     public static async findByEmail(email:String): Promise<User | null>{
         
-        return await UserModel.findOne({email: email}).lean<User>().exec();
+        try{
+            const user =  await UserModel.findOne({email}).select('+password').exec();
+            
+            return user;
+        }catch(error){
+            throw new Error(error);
+        }
         
     }
 
