@@ -1,7 +1,6 @@
 import Token from '../token/TokenService';
 import bcrypt from 'bcryptjs';
 import UserRepo from '../../database/repositories/User';
-import AuthValidatorService from '../validation/AuthValidator';
 
 export default class LoginService {
     private email: string;
@@ -15,11 +14,6 @@ export default class LoginService {
     }
 
     public async login(): Promise<object> {
-        const authValidator = new AuthValidatorService();
-        
-        if (authValidator.validateLogin(this.email, this.password) == false) {
-            throw new Error(this.INVALID_CREDENTIALS_ERROR);
-        }
 
         try{
             const user = await UserRepo.findByEmail(this.email);
