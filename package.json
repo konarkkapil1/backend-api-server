@@ -35,10 +35,15 @@
     "express": "^4.17.1",
     "express-validator": "^6.10.1",
     "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
     "mongoose": "^5.12.7",
     "reflect-metadata": "^0.1.13",
     "uuid": "^8.3.2",
     "validator": "^13.6.0",
     "winston": "^3.3.3"
+  },
+  "_moduleAliases": {
+    "@root"      : ".",
+    "@services"  : "./src/services"
   }
 }

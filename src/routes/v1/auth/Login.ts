@@ -4,6 +4,8 @@ import { BadRequest, HttpResponse, UnauthorizedError } from '../../../response/R
 
 export default class Login {
     private app: Router;
+    PASSWORD_MIN_LENGTH = 4;
+    EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
     constructor(app: Router) {
         this.app = app;
@@ -15,6 +17,14 @@ export default class Login {
             const { email, password } = req.body;
 
             if (email == undefined || password == undefined) {
+                return new BadRequest("Invalid Credentials").send(res);
+            }
+
+            if (!email.match(this.EMAIL_REGEX)) {
+                return new BadRequest("Invalid Credentials").send(res);
+            }
+
+            if (password.length < this.PASSWORD_MIN_LENGTH) {
                 return new BadRequest("Invalid Credentials").send(res);
             }
 

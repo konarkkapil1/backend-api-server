@@ -1,5 +1,5 @@
 import App from './app';
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import { PORT } from './config';
 import Loaders from './loaders/loaders';
 
