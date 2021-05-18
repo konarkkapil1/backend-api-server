@@ -1,5 +1,4 @@
 import User, { UserModel } from '../models/User';
-import { Types } from 'mongoose';
 
 export default class UserRepo {
 
