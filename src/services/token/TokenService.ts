@@ -28,10 +28,13 @@ export default class Token {
 
     public encode(): object | Error {
         try{
-            const accessToken = jwt.sign({iat: this.iat, data: this.payload, sub: this.payload.id, prm: uuid(), alg: 'RS256'} , this.accessTokenSecret, this.accessTokenOptions);
-            const refreshToken = jwt.sign({iat: this.iat, data: {}, sub: this.payload.id, prm: uuid(), alg: 'RS256'}, this.refreshTokenSecret, this.refreshTokenOptions)
+            const accessTokenId = uuid();
+            const refreshTokenId = uuid();
 
-            return { accessToken, refreshToken };
+            const accessToken = jwt.sign({iat: this.iat, sub: this.payload.id, prm: accessTokenId, alg: 'RS256'} , this.accessTokenSecret, this.accessTokenOptions);
+            const refreshToken = jwt.sign({iat: this.iat, data: {}, sub: this.payload.id, prm: refreshTokenId, alg: 'RS256'}, this.refreshTokenSecret, this.refreshTokenOptions)
+
+            return { accessToken, refreshToken, accessTokenId: accessTokenId, refreshTokenId: refreshTokenId };
         }catch(error){
             throw new Error(error);
         }

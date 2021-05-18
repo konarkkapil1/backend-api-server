@@ -26,7 +26,7 @@ export default class Routes {
         //Authentication middleware
         this.app.use(new Authentication().authenticate());
 
-        this.app.get('/index', (req,res) => {
+        this.app.get('/index', (req, res) => {
             res.json({message: "success", user: (<any>req).user});
         })
         
