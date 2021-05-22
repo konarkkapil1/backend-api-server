@@ -17,7 +17,7 @@ export default class Token {
         this.accessTokenSecret = token.ACCESS_TOKEN_SECRET;
         this.refreshTokenSecret = token.REFRESH_TOKEN_SECRET;
         this.accessTokenOptions = {
-            expiresIn: '1d',
+            expiresIn: '5m',
             issuer: DOMAIN,
         }
         this.refreshTokenOptions = {
@@ -26,7 +26,7 @@ export default class Token {
         }
     }
 
-    public encode(): object | Error {
+    public encode(): object {
         try{
             const accessTokenId = uuid();
             const refreshTokenId = uuid();
