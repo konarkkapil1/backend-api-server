@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import LoginService from '../../../services/auth/Login';
 import Token from '../../../services/token/TokenService';
 import SessionService from '../../../services/session/SessionService';
-import { BadRequest, HttpResponse, InternalServerError, UnauthorizedError } from '../../../response/Response';
+import { BadRequest, HttpResponse, UnauthorizedError } from '../../../response/Response';
 import User from '../../../database/models/User';
 
 export default class Login {
@@ -36,10 +36,6 @@ export default class Login {
                 const loginService = new LoginService(email, password);
                 const user: User = await loginService.login();
 
-                if (!user) {
-                    return new BadRequest("Invalid Credentials").send(res);
-                }
-
                 const tokenData = {
                     id: user.id,
                     name: user.name,
@@ -47,11 +43,8 @@ export default class Login {
                     profilePicUrl: user.profilePicUrl,
                 }
                 const token: any = new Token(tokenData).encode();
-                
-                if (!token) {
-                    return new InternalServerError().send(res);
-                }
 
+                //filter data to be sent
                 const response = {
                     token: {
                         accessToken: token.accessToken,
@@ -65,16 +58,11 @@ export default class Login {
                     refreshToken: token.refreshTokenId,
                 }
                 const sessionService = new SessionService(sessionData);
-                const isSessionSaved = await sessionService.save();
-
-                if (!isSessionSaved) {
-                    return new InternalServerError().send(res);
-                }
+                await sessionService.save();
 
                 return new HttpResponse('user', response).send(res);
 
             }catch(error) {
-                console.log(error.message);
                 return new UnauthorizedError().send(res);
             }
 
