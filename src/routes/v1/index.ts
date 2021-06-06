@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Signup from './auth/signup';
 import Login from './auth/Login';
+import Refresh from './auth/Refresh';
 import Authentication from '../../middlwares/Authentication';
 import { NotFound } from '../../response/Response';
 
@@ -22,6 +23,7 @@ export default class Routes {
         */
         this.app.use(this.AUTH_ROUTES_PATH, new Signup(this.app).getRoute());
         this.app.use(this.AUTH_ROUTES_PATH, new Login(this.app).getRoute())
+        this.app.use(this.AUTH_ROUTES_PATH, new Refresh(this.app).getRoute());
 
         //Authentication middleware
         this.app.use(new Authentication().authenticate());

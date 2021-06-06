@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import UserRepo from '../../database/repositories/User';
-import User from '../../database/models/User';
+import TokenService from '../token/TokenService';
+import SessionService from '../session/SessionService';
 
 export default class LoginService {
     private email: string;
@@ -13,10 +14,11 @@ export default class LoginService {
         this.password = password;
     }
 
-    public async login(): Promise<User> {
+    public async login(): Promise<object | Error> {
+        var user = null;
 
         try{
-            const user = await UserRepo.findByEmail(this.email);
+            user = await UserRepo.findByEmail(this.email);
             
             if (user == undefined) {
                 throw new Error(this.INVALID_CREDENTIALS_ERROR);
@@ -25,17 +27,38 @@ export default class LoginService {
             if (await bcrypt.compare(this.password, user.password.toString()) == false) {
                 throw new Error(this.INVALID_CREDENTIALS_ERROR);
             }
-            
-            return {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                profilePicUrl: user.profilePicUrl
-            } as User;
-                
-            
+    
         }catch(error) {
             throw new Error(this.INVALID_CREDENTIALS_ERROR);
         }
+        
+        var token: any = null;
+        try {
+            token = TokenService.encode({id: user.id});
+        }catch(error){
+            throw new Error(error);
+        }
+        
+        try{
+            const sessionService = new SessionService({
+                uid: user.id,
+                refreshToken: token.refreshTokenId
+            });
+            sessionService.save();
+        }catch(error){  
+            throw new Error(error);
+        }
+
+        return {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            profilePicUrl: user.profilePicUrl,
+            token: {
+                accessToken: token.accessToken,
+                refreshToken: token.refreshToken
+            }
+        };
     }
+
 }

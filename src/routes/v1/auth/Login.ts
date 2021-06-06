@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import LoginService from '../../../services/auth/Login';
-import Token from '../../../services/token/TokenService';
+import TokenService from '../../../services/token/TokenService';
 import SessionService from '../../../services/session/SessionService';
 import { BadRequest, HttpResponse, UnauthorizedError } from '../../../response/Response';
 import User from '../../../database/models/User';
@@ -34,35 +34,12 @@ export default class Login {
 
             try{
                 const loginService = new LoginService(email, password);
-                const user: User = await loginService.login();
+                const user: any = await loginService.login();
 
-                const tokenData = {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    profilePicUrl: user.profilePicUrl,
-                }
-                const token: any = new Token(tokenData).encode();
-
-                //filter data to be sent
-                const response = {
-                    token: {
-                        accessToken: token.accessToken,
-                        refreshToken: token.refreshToken
-                    },
-                    ...user
-                }
-
-                const sessionData = {
-                    uid: user.id,
-                    refreshToken: token.refreshTokenId,
-                }
-                const sessionService = new SessionService(sessionData);
-                await sessionService.save();
-
-                return new HttpResponse('user', response).send(res);
+                return new HttpResponse('user', user).send(res);
 
             }catch(error) {
+                console.log(error);
                 return new UnauthorizedError().send(res);
             }
 

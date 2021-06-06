@@ -14,8 +14,6 @@ export default class SignupService {
 
     public async save(): Promise<object> {
 
-        //TODO: create a sanitisation service
-
         try{
             const user = await UserRepo.findByEmail(this.user.email);
             if (user) {
@@ -40,7 +38,7 @@ export default class SignupService {
                 email: this.user.email,
                 profilePicUrl: this.user.profilePicUrl
             }
-            const token = new Token(tokenData).encode();
+            const token = Token.encode(tokenData);
             this.newUser = {
                 id: this.user._id,
                 name: this.user.name,

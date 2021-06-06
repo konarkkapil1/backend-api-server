@@ -24,7 +24,7 @@ export default class SessionRepo {
 
     public static async delete(id: string): Promise<boolean> {
         try{
-            const response = await SessionModel.findOneAndRemove({id});
+            const response = await SessionModel.findOneAndRemove({refreshToken: id});
 
             if (response != undefined) {
                 return true;

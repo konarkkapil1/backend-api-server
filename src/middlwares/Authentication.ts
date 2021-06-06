@@ -3,6 +3,7 @@ import { verify } from 'jsonwebtoken';
 import JWT from '../utils/JWT';
 import { token, DOMAIN } from '../config';
 import { UnauthorizedError }  from '../response/Response';
+import TokenService from '../services/token/TokenService';
 
 export default class Authentication {
 
@@ -12,16 +13,14 @@ export default class Authentication {
                 const accessToken: string = req.headers['access-token'].toString();
 
                 try{
-                    const decodedAccessToken: any = await verify(accessToken, token.ACCESS_TOKEN_SECRET);
+                    const decodedAccessToken: any = await TokenService.decodeAccessToken(accessToken);
                     
                     //verifying token
                     if (this.validateToken(decodedAccessToken) != true) {
+                        console.log("invalid token");
                         return new UnauthorizedError().send(res);
                     }
 
-                    if (decodedAccessToken.exp < new Date()) {
-                        return new UnauthorizedError().send(res);
-                    }
                     req.user = decodedAccessToken;
 
                     next();
